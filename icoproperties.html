@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ICOProperties — آنالیزر حرفه‌ای آیکون (.ico)</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<style>
+@font-face {
+  font-family: 'Vazir Variable';
+  src: url('fonts/Vazir-Variable.woff2') format('woff2'),
+       url('fonts/Vazir-Variable.woff') format('woff');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+body{
+  font-family: 'Vazir Variable', sans-serif;
+  font-weight: 400;
+}
+
+:root{
+  --surface: 255 255 255;
+  --on-surface: 22 24 35;
+  --primary: 16 108 200;
+  --primary-variant: 8 70 150;
+  --accent: 0 162 255;
+  --glass-bg: 255 255 255 / 0.55;
+  --radius-lg: 20px;
+  --shadow-1: 0 6px 18px rgba(16,24,40,0.08);
+  --shadow-2: 0 12px 36px rgba(16,24,40,0.08);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background: linear-gradient(180deg, rgba(var(--primary),0.06) 0%, rgba(240,246,255,1) 50%);
+  color: rgb(var(--on-surface));
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:20px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+}
+
+.container{
+  width:1100px;
+  max-width:calc(100% - 40px);
+  padding:12px;
+}
+
+header.appbar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;margin-bottom:14px;flex-wrap:wrap;
+}
+
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  width:56px;height:56px;border-radius:12px;display:grid;place-items:center;
+  background: linear-gradient(135deg, rgba(var(--primary),0.95), rgba(var(--primary-variant),0.95));
+  color:white;font-weight:700;font-size:18px; box-shadow: 0 6px 18px rgba(13,71,161,0.18);
+}
+.title{font-size:18px;font-weight:700}
+.subtitle{font-size:12px;color:rgba(var(--on-surface),0.6)}
+
+.glass{
+  background: linear-gradient(180deg, rgba(var(--glass-bg))), rgba(255,255,255,0.36);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  border-radius:var(--radius-lg);
+  padding:16px;
+  box-shadow:var(--shadow-1);
+}
+
+.uploader{ display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+.drop{
+  position:relative;
+  flex:1; min-height:150px; border-radius:12px; padding:18px;
+  border:1px dashed rgba(var(--primary),0.22);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  cursor:pointer;
+  transition: transform 260ms cubic-bezier(.16,.84,.3,1), box-shadow 260ms, border-color 200ms, background 260ms;
+  background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.45));
+  -webkit-tap-highlight-color: transparent;
+}
+.drop:hover{ transform:translateY(-4px); box-shadow: var(--shadow-2); }
+.drop.dragover{ border-color: rgba(var(--accent),0.95); background: linear-gradient(180deg, rgba(250,255,255,0.9), rgba(245,250,255,0.95)); }
+
+.drop .big{ font-size:20px; font-weight:600; }
+.muted{ color:rgba(var(--on-surface),0.55); font-size:13px; }
+
+.drop input[type="file"]{
+  position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:2;
+}
+
+.actions{ width:260px; display:flex; flex-direction:column; gap:8px; }
+.btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:600; transition: .18s ease; background:transparent; }
+.btn.primary{ background: linear-gradient(90deg, rgb(var(--primary)), rgb(var(--primary-variant))); color:#fff; box-shadow: 0 8px 24px rgba(16,108,200,0.12); }
+.btn.ghost{ border:1px solid rgba(16,24,40,0.06); background:transparent; color:inherit; }
+
+.btn{ font-family: 'Vazir Variable', sans-serif; }
+
+.copy-meta-btn.copied{ animation: copiedAnim 1.2s forwards; }
+@keyframes copiedAnim{
+  0% { transform: scale(1); background: rgba(16,108,200,0.1); }
+  50% { transform: scale(1.08); background: rgba(16,108,200,0.18); }
+  100% { transform: scale(1); background: transparent; }
+}
+
+.meta-row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:12px; }
+.stat{ background:rgba(255,255,255,0.66); padding:10px 12px; border-radius:10px; box-shadow:var(--shadow-1); min-width:120px; }
+.stat .num{ font-weight:700; }
+
+.frames{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
+  gap:16px; margin-top:16px;
+}
+
+.frame-card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(250,250,255,0.96));
+  padding:12px; border-radius:12px; box-shadow: 0 6px 20px rgba(16,24,40,0.06);
+  display:flex; gap:12px; align-items:center;
+  opacity:0; transform: translateY(14px) scale(.995);
+  transition: opacity 520ms cubic-bezier(.16,.84,.3,1), transform 520ms cubic-bezier(.16,.84,.3,1), box-shadow 520ms;
+  will-change: transform, opacity;
+}
+.frame-card.show{ opacity:1; transform: translateY(0) scale(1); box-shadow: 0 14px 36px rgba(16,24,40,0.08); }
+.frame-card.hide{ opacity:0; transform: translateY(10px) scale(.995); box-shadow: 0 4px 12px rgba(16,24,40,0.03); }
+
+.preview{
+  width:72px; height:72px; border-radius:10px; display:grid; place-items:center;
+  background: linear-gradient(180deg, rgba(250,250,255,0.6), rgba(245,247,255,0.9)); border:1px solid rgba(16,24,40,0.04);
+  flex: 0 0 72px;
+}
+.frame-info{ flex:1; }
+.frame-info h4{ margin:0 0 6px 0; font-size:15px; }
+.frame-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.badge{ font-size:13px; padding:6px 8px; border-radius:8px; background:rgba(0,0,0,0.04); }
+
+.download-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:10px; border:1px solid rgba(16,24,40,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(247,250,255,0.98));
+  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+  transition: transform 320ms cubic-bezier(.16,.84,.3,1), box-shadow 320ms, background 320ms;
+  text-decoration:none; color:inherit; font-weight:600;
+}
+.download-btn:hover{ transform: translateY(-6px); box-shadow: 0 20px 50px rgba(16,24,40,0.09); background:linear-gradient(180deg, rgba(241,248,255,1), rgba(250,250,255,1)); }
+
+#summary{
+  transition: opacity 420ms cubic-bezier(.16,.84,.3,1), transform 420ms cubic-bezier(.16,.84,.3,1);
+  transform: translateY(0);
+  opacity: 1;
+}
+#summary.hide{
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+@media (max-width:900px){
+  .container{ padding:12px; }
+  .frames{ grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); }
+  .preview{ width:56px; height:56px; flex:0 0 56px; }
+  .actions{ width:100%; }
+}
+.material{ font-variation-settings: 'wght' 400; font-family: 'Material Symbols Outlined'; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="appbar">
+      <div class="brand">
+        <div class="logo"><img src="image/logo-ico.svg" alt="ICO Logo" style="width:100%;height:100%;object-fit:contain"></div>
+        <div>
+          <div class="title">ICOProperties</div>
+          <div class="subtitle">آنالیز عمیق فایل‌های .ico — جزئیات بیشتر از Properties ویندوز</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn ghost" id="how"><span class="material">help</span> راهنما</button>
+      </div>
+    </header>
+
+    <section class="glass">
+      <div class="uploader">
+        <div class="drop" id="drop" aria-label="drop area">
+          <div class="big">کشیدن و رها کردن یا کلیک برای انتخاب فایل</div>
+          <div class="muted">فایل‌های .ico را بکشید یا انتخاب کنید — چند رزولوشن نمایش داده خواهد شد</div>
+          <input id="file" type="file" accept=".ico,image/vnd.microsoft.icon" />
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="btnSelect"><span class="material">file_upload</span> انتخاب فایل</button>
+          <button class="btn ghost" id="btnClear"><span class="material">restart_alt</span> پاک کردن</button>
+          <div style="margin-top:6px;font-size:13px;color:rgba(var(--on-surface),0.65)">حالت آزمایشی — برخی ICOهای قدیمی ممکن است پشتیبانی نشوند.</div>
+        </div>
+      </div>
+
+      <div id="summary" style="margin-top:12px;display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div>
+            <div style="font-weight:700">خلاصهٔ فایل</div>
+            <div style="color:rgba(var(--on-surface),0.6);font-size:13px">اطلاعات کلی و تعداد فریم‌ها</div>
+          </div>
+          <div class="meta-row">
+            <div class="stat"><div class="num" id="count">0</div><div class="muted">فریم</div></div>
+            <div class="stat"><div class="num" id="filesize">0 بایت</div><div class="muted">حجم فایل</div></div>
+            <div class="stat"><div class="num" id="formats">—</div><div class="muted">فرمت‌ها</div></div>
+          </div>
+        </div>
+
+        <div class="frames" id="frames"></div>
+      </div>
+
+      <div id="notfound" style="display:none;margin-top:12px">
+        <div style="font-weight:700">هیچ داده‌ای یافت نشد</div>
+        <div class="muted">فایل معتبر به نظر نمی‌رسد یا چیزی برای استخراج وجود ندارد.</div>
+      </div>
+    </section>
+
+    <footer style="margin-top:18px;color:rgba(var(--on-surface),0.6);font-size:13px;text-align:center">
+      نسخهٔ آزمایشی — فقط برای مشاهده محلی (client-side).
+    </footer>
+  </div>
+
+<script>
+const CARD_STAGGER = 90;
+const CARD_DURATION = 520;
+const REMOVE_BUFFER = 80;
+
+const drop = document.getElementById('drop');
+const fileInput = document.getElementById('file');
+const btnSelect = document.getElementById('btnSelect');
+const btnClear = document.getElementById('btnClear');
+const howBtn = document.getElementById('how');
+const summary = document.getElementById('summary');
+const framesEl = document.getElementById('frames');
+const countEl = document.getElementById('count');
+const fileSizeEl = document.getElementById('filesize');
+const formatsEl = document.getElementById('formats');
+const notfound = document.getElementById('notfound');
+
+let createdURLs = [];
+
+function u8(arr, off){ return arr[off]; }
+function u16(arr, off){ return (arr[off]) | (arr[off+1]<<8); }
+function u32(arr, off){ return (arr[off]) | (arr[off+1]<<8) | (arr[off+2]<<16) | (arr[off+3]<<24); }
+
+btnSelect.addEventListener('click', ()=> fileInput.click());
+
+['dragenter','dragover'].forEach(ev=>{
+  drop.addEventListener(ev, (e)=>{ e.preventDefault(); drop.classList.add('dragover'); });
+});
+['dragleave','drop'].forEach(ev=>{
+  drop.addEventListener(ev, (e)=>{ drop.classList.remove('dragover'); });
+});
+drop.addEventListener('drop', (e)=>{ e.preventDefault(); const f = e.dataTransfer.files?.[0]; if(f) handleFilesWithClear([f]); });
+
+howBtn.addEventListener('click', ()=>{
+  alert('راهنما:\n1) روی جعبه کلیک یا فایل را بکشید و رها کنید.\n2) فریم‌های داخل .ico استخراج و نمایش داده می‌شود.\n3) می‌توانید هر فریم را دانلود یا مشخصاتش را کپی کنید.\n\nتوجه: این یک ابزار client-side است؛ فایل‌ها به سرور ارسال نمی‌شوند.');
+});
+
+fileInput.addEventListener('change', (e)=>{
+  if(e.target.files && e.target.files.length) {
+    handleFilesWithClear(e.target.files);
+  }
+});
+
+btnClear.addEventListener('click', async ()=>{
+  await animateRemoveFrames();
+
+  if(summary.style.display !== 'none'){
+    summary.classList.add('hide');
+    await new Promise(r => setTimeout(r, 440));
+    resetSummary();
+    summary.classList.remove('hide');
+  }else{
+    resetSummary();
+  }
+
+  revokeAll();
+  fileInput.value = '';
+});
+
+function revokeAll(){
+  createdURLs.forEach(u=>{ try{ URL.revokeObjectURL(u); }catch(_){} });
+  createdURLs = [];
+}
+
+function resetSummary(){
+  summary.style.display = 'none';
+  notfound.style.display = 'none';
+  countEl.textContent = '0';
+  fileSizeEl.textContent = '0 بایت';
+  formatsEl.textContent = '—';
+}
+
+function animateRemoveFrames(){
+  return new Promise((resolve)=>{
+    const cards = Array.from(framesEl.querySelectorAll('.frame-card'));
+    if(cards.length === 0){
+      resolve();
+      return;
+    }
+    cards.forEach((c,i)=>{
+      setTimeout(()=>{ c.classList.remove('show'); c.classList.add('hide'); }, i * CARD_STAGGER);
+    });
+    const total = CARD_DURATION + (cards.length - 1) * CARD_STAGGER + REMOVE_BUFFER;
+    setTimeout(()=>{
+      framesEl.innerHTML = '';
+      resolve();
+    }, total);
+  });
+}
+
+async function handleFilesWithClear(files){
+  await animateRemoveFrames();
+  resetSummary();
+  if(files && files.length) {
+    await handleFiles(files);
+  }
+}
+
+async function handleFiles(files){
+  const file = files[0];
+  if(!file) return;
+  const ab = await file.arrayBuffer();
+  const bytes = new Uint8Array(ab);
+
+  try{
+    const res = parseICO(bytes);
+    await renderResult(res, file);
+  }catch(err){
+    console.error(err);
+    resetSummary();
+    notfound.style.display = 'block';
+  }
+}
+
+function parseICO(bytes){
+  if(bytes.length < 6) throw new Error('نامعتبر');
+  const reserved = u16(bytes,0);
+  const type = u16(bytes,2);
+  const count = u16(bytes,4);
+  if(reserved !== 0 || (type !== 1 && type !== 2) || count < 1) throw new Error('فرمت ICO معتبر نیست');
+
+  const entries = [];
+  let off = 6;
+  for(let i=0;i<count;i++){
+    const width = u8(bytes, off) || 256;
+    const height = u8(bytes, off+1) || 256;
+    const colorCount = u8(bytes, off+2);
+    const planes = u16(bytes, off+4);
+    const bitCount = u16(bytes, off+6);
+    const bytesInRes = u32(bytes, off+8);
+    const imageOffset = u32(bytes, off+12);
+    entries.push({ width, height, colorCount, planes, bitCount, bytesInRes, imageOffset });
+    off += 16;
+  }
+  return { entries, bytes };
+}
+
+async function renderResult(res, file){
+  framesEl.innerHTML = '';
+  notfound.style.display = 'none';
+  summary.style.display = 'block';
+  countEl.textContent = res.entries.length;
+  fileSizeEl.textContent = file.size.toLocaleString('en-US') + ' بایت';
+  const foundFormats = new Set();
+
+  for(let i=0;i<res.entries.length;i++){
+    const e = res.entries[i];
+    const slice = res.bytes.slice(e.imageOffset, e.imageOffset + e.bytesInRes);
+
+    const isPng = slice[0] === 0x89 && slice[1] === 0x50 && slice[2] === 0x4E && slice[3] === 0x47;
+    let blob, format;
+    if(isPng){
+      blob = new Blob([slice.buffer], { type: 'image/png' });
+      format = 'PNG';
+      e.bitsPerPixel = 32;
+    }else{
+      const biSize = u32(slice,0);
+      const bfType = new Uint8Array([0x42,0x4D]);
+      const bfSize = 14 + slice.length;
+      const bfSizeBytes = new Uint8Array([bfSize & 0xFF, (bfSize>>8)&0xFF, (bfSize>>16)&0xFF, (bfSize>>24)&0xFF]);
+      const bfReserved = new Uint8Array([0,0,0,0]);
+      const bfOffBits = 14 + biSize;
+      const bfOffBytes = new Uint8Array([bfOffBits & 0xFF, (bfOffBits>>8)&0xFF, (bfOffBits>>16)&0xFF, (bfOffBits>>24)&0xFF]);
+      const header = new Uint8Array(14);
+      header.set(bfType,0); header.set(bfSizeBytes,2); header.set(bfReserved,6); header.set(bfOffBytes,10);
+      blob = new Blob([header.buffer, slice.buffer], { type: 'image/bmp' });
+      format = 'BMP (DIB)';
+      e.bitsPerPixel = e.bitCount || 32;
+    }
+    foundFormats.add(format);
+
+    const url = URL.createObjectURL(blob);
+    createdURLs.push(url);
+
+    const img = await loadImage(url);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth || 1; canvas.height = img.naturalHeight || 1;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    try{ ctx.drawImage(img,0,0); }catch(e){}
+    let hasAlpha = false;
+    try{
+      const data = ctx.getImageData(0,0,Math.min(64,canvas.width), Math.min(64,canvas.height)).data;
+      for(let p=3;p<data.length;p+=4){ if(data[p] !== 255){ hasAlpha = true; break; } }
+    }catch(e){}
+
+    const actualDimensions = (img.naturalWidth || e.width) + '×' + (img.naturalHeight || e.height);
+    const humanSize = e.bytesInRes.toLocaleString('en-US') + ' بایت';
+
+    const card = document.createElement('div');
+    card.className = 'frame-card';
+    card.innerHTML = `
+      <div class="preview"><img src="${url}" style="max-width:70px;max-height:70px;display:block" alt="frame-${i}"></div>
+      <div class="frame-info">
+        <h4>فریم ${i+1} — ${actualDimensions}</h4>
+        <div class="frame-row">
+          <div class="badge">فرمت: ${format}</div>
+          <div class="badge">عمق رنگ: ${e.bitsPerPixel ?? '—'} بیت</div>
+          <div class="badge">آلفا: ${hasAlpha ? 'دارد' : 'ندارد'}</div>
+          <div class="badge">حجم: ${humanSize}</div>
+          <div class="badge">اندیس: offset ${e.imageOffset}</div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <a class="download-btn" href="${url}" download="icon-frame-${i+1}.${format.startsWith('PNG')? 'png': 'bmp'}">دانلود PNG</a>
+          <button class="btn copy-meta-btn">کپی مشخصات</button>
+        </div>
+      </div>
+    `;
+
+    framesEl.appendChild(card);
+
+    const copyBtn = card.querySelector('.copy-meta-btn');
+    if(copyBtn){
+      copyBtn.addEventListener('click', ()=>{
+        const meta = { index:i+1, width:e.width, height:e.height, bitCount:e.bitsPerPixel, format };
+        try{ navigator.clipboard?.writeText(JSON.stringify(meta,null,2)); }
+        catch(e){ console.warn('clipboard failed', e); }
+        const prev = copyBtn.textContent;
+        copyBtn.textContent = 'کپی شد ✓';
+        copyBtn.classList.add('copied');
+        setTimeout(()=>{ copyBtn.textContent = prev; copyBtn.classList.remove('copied'); }, 1200);
+      });
+    }
+
+    requestAnimationFrame(()=> {
+      setTimeout(()=>{ card.classList.add('show'); }, i * CARD_STAGGER);
+    });
+  }
+
+  formatsEl.textContent = Array.from(foundFormats).join(' ، ');
+}
+
+function loadImage(src){
+  return new Promise((res)=>{
+    const img = new Image();
+    img.onload = ()=>res(img);
+    img.onerror = ()=>res(img);
+    img.src = src;
+  });
+}
+</script>
+</body>
+</html>
